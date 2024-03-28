@@ -68,7 +68,7 @@ func registerHandler(db *sql.DB) http.HandlerFunc {
 			http.Error(w, "Failed to save user", http.StatusInternalServerError)
 			return
 		}
-		fmt.Fprintf(w, "User registered successfully!")
+		fmt.Fprintf(w, "User registered successfully!\n")
 	}
 }
 
@@ -93,6 +93,6 @@ func loginHandler(db *sql.DB) http.HandlerFunc {
 			http.Error(w, "Invalid credential!", http.StatusMethodNotAllowed)
 			return
 		}
-		fmt.Fprintf(w, "Logged in successfully!")
+		fmt.Fprintf(w, "Logged in successfully!\n")
 	}
 }
