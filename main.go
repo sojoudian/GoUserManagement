@@ -19,7 +19,7 @@ const (
 
 type User struct {
 	Username     string
-	PAsswordHash string
+	PasswordHash string
 }
 
 func main() {
@@ -62,5 +62,30 @@ func registerHandler(db *sql.DB) http.HandlerFunc {
 			return
 		}
 		fmt.Fprintf(w, "User registered successfully!")
+	}
+}
+
+func loginHandler(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			http.Error(w, "Only Post method is allowed!", http.StatusMethodNotAllowed)
+			return
+		}
+		username := r.FormValue("username")
+		password := r.FormValue("password")
+
+		var passwordHash string
+		err := db.QueryRow("SELECT password_hash FROM users WHERE username = $1",
+			username).Scan(&passwordHash)
+		if err != nil {
+			http.Error(w, "User not found", http.StatusUnauthorized)
+			return
+		}
+		err = bcrypt.CompareHashAndPassword([]byte(passwordHash), []byte(password))
+		if err != nil {
+			http.Error(w, "Invalid credential!", http.StatusMethodNotAllowed)
+			return
+		}
+		fmt.Fprintf(w, "Logged in successfully!")
 	}
 }
